@@ -5,35 +5,34 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
 <style>
 table.calendar {
     margin-bottom: 0;
-    border: 2px solid #dddddd;
-    padding: 10px;
 }
 
 table.calendar > thead > tr > th {
-    text-align: center;
+    text-align: center; 
 }
 
 table.calendar > tbody > tr > td {
-    height: 25px;
+    height: 20px;
 }
 
 table.calendar > tbody > tr > td > div {
-    padding: 7px;
-    height: 40px; 
+    padding: 8px;
+    height: 40px;
     overflow: hidden;
     display: inline-block;
     vertical-align: middle;
-    border: 1px solid #dddddd;
+    float: left;
 }
 
 table.calendar > tbody > tr > td.has-events {
     color: white;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 5px;
+    padding: 0;
+    border-radius: 4px;
 }
 
 table.calendar > tbody > tr > td.has-events > div {
@@ -42,7 +41,7 @@ table.calendar > tbody > tr > td.has-events > div {
 }
 
 table.calendar > tbody > tr > td.has-events > div:first-child {
-    border: 1px solid black;
+    border-left: 0;
     margin-left: 1px;
 }
 
@@ -148,22 +147,18 @@ $x=0;
 //10:00
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){
-        $x++; 
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
-        }
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span></div></td>";  
     }else{
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-echo "</tr>";    
+}
+echo "</tr>";
 
 $timestamp = strtotime($time) + 60*60;
-$time = date('H:i', $timestamp); 
+$time = date('H:i', $timestamp);  
 
 $sql2= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
 FROM createtask  
@@ -179,29 +174,24 @@ $result = $conn->query($sql2);
 //11:00
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
         $tmp++;
-        $x++;
-        //No event if odd idNum
-        if($tmp%2==1){
+
+        //No event if even idNum
+        if($tmp%2==0){
             echo "<td class=\" no-events\" rowspan=\"1\"></td>";
         } 
-        //Event if even idNum
-        if($tmp%2==0){
-            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
-            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+        //Event if odd idNum
+        if($tmp%2==1){
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> </div></td>";     
         }   
-
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-
-    }else{ 
-            while($x<7){
-                $x++;
-                echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-            }
-    }   
-echo "</tr>"; 
+}
+echo "</tr>";
 
 $timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp);    
@@ -214,25 +204,20 @@ ORDER BY createtask.listTitle
 LIMIT 7,7";
 
 $result = $conn->query($sql3);
-$tmp=0;
 $x=0;
 
 //12:00
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){ 
-        $tmp++;
-        $x++;
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
-        }
-    }else{ 
-        while($x<7){
-            $x++;
-        echo "<td class=\" no-events\" rowspan=\"1\"></td>";}
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span></div></td>";  
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-echo "</tr>"; 
+}
+echo "</tr>";
 
 $timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
@@ -248,31 +233,27 @@ $x=0;
 
 $result = $conn->query($sql4);
 
+//13:00
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
         $tmp++;
-        $x++;
-        //No event if odd idNum
-        if($tmp%2==0){
+
+        //No event if even idNum
+        if($tmp%2==1){
             echo "<td class=\" no-events\" rowspan=\"1\"></td>";
         } 
-        //Event if even idNum
-        if($tmp%2==1){
-            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
-            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+        //Event if odd idNum
+        if($tmp%2==0){
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> </div></td>";     
         }   
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-
-    }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        }
-
-    }
-echo "</tr>"; 
+}
+echo "</tr>";
 
 $sql5= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
 FROM createtask  
@@ -287,23 +268,21 @@ $timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
 $x=0;
 
+//14:00
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){ 
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
-        }
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> </div></td>";     
+           
     }else{
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        }  
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-echo "</tr>"; 
+}
+echo "</tr>";
 
 //Free time at 15:00
-
 $timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
 $tmp=0;
@@ -317,15 +296,12 @@ if($tmp!=1){ //Output data in each row
         $x++;
         echo "<td class=\" no-events\" rowspan=\"1\"></td>";} 
     }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
     } 
 echo "</tr>";
 
 $timestamp = strtotime($time) + 60*60;
-$time = date('H:i', $timestamp); 
+$time = date('H:i', $timestamp);  
 
 $sql6= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
 FROM createtask  
@@ -338,29 +314,26 @@ $x=0;
 
 $result = $conn->query($sql6);
 
+//16:00
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
         $tmp++;
-        $x++;
+
         //No event if even idNum
         if($tmp%2==0){
             echo "<td class=\" no-events\" rowspan=\"1\"></td>";
         } 
         //Event if odd idNum
         if($tmp%2==1){
-            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
-            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> </div></td>";     
         }   
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-
-    }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
-    }
+}
 echo "</tr>"; 
 
 $sql7= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
@@ -377,21 +350,18 @@ $time = date('H:i', $timestamp);
 
 $x=0;
 
-echo "<tr>"; 
+//17:00 
+echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){ 
-        $x++;
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
-        }
-    }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span></div></td>";  
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-echo "</tr>";  
+}
+echo "</tr>"; 
 
 $timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
@@ -408,33 +378,30 @@ $x=0;
 
 $result = $conn->query($sql6);
 
+//18:00
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
         $tmp++;
-        $x++;
-        //No event if odd idNum
+
+        //No event if even idNum
         if($tmp%2==1){
             echo "<td class=\" no-events\" rowspan=\"1\"></td>";
         } 
-        //Event if even idNum
+        //Event if odd idNum
         if($tmp%2==0){
-            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
-            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> </div></td>";     
         }   
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-
-    }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
-    }
-echo "</tr>";
+}
+echo "</tr>"; 
 
 $timestamp = strtotime($time) + 60*60;
-$time = date('H:i', $timestamp); 
+$time = date('H:i', $timestamp);  
 
 $sql8= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
 FROM createtask  
@@ -446,21 +413,17 @@ $tmp=0;
 $x=0; 
 
 $result = $conn->query($sql8);
-
+ 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){ 
-        $x++;       
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
-        }   
-    }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span></div></td>";  
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
+}
 echo "</tr>";
 
 $sql9= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
@@ -475,22 +438,18 @@ $result = $conn->query($sql9);
 $timestamp = strtotime($time) + 60*60; //increment by 1 hour
 $time = date('H:i', $timestamp); 
 $x=0;
-
+ 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){
-        $x++; 
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
-        }
-    }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        }  
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span></div></td>";  
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-echo "</tr>";  
+}
+echo "</tr>"; 
 
 // third appearance of task with priority level h
 $sql10= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
@@ -509,18 +468,14 @@ $x=0;
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){ 
-        $x++;
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
-        }
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span></div></td>";  
     }else{
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
+}
 echo "</tr>";
 
 $sql11= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
@@ -534,24 +489,18 @@ $result = $conn->query($sql11);
 
 $timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
-$tmp=0;
 $x=0;
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result->num_rows > 0){ //Output data in each row
-    while($row = $result->fetch_assoc()){ 
-        $tmp++;
-        $x++;
-        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
-        }
-    }else{ 
-        while($x<7){
-            $x++;
-            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
-        } 
-    } 
+for($x=0;$x<7;$x++){ //Output data in each row
+    if(($row = $result->fetch_assoc())!=NULL){
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 99%; height: 100%; padding:4px;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span></div></td>";  
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
+    }
+}
 echo "</tr>";
 
 /*echo "<tr>";
