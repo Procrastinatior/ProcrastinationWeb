@@ -77,8 +77,6 @@ table.table-borderless > thead > tr > th, table.table-borderless > tbody > tr > 
 </head>
 <body>
 
-    
-
 <table class="calendar table table-bordered">
     <thead>
         <tr>
@@ -108,99 +106,28 @@ table.table-borderless > thead > tr > th, table.table-borderless > tbody > tr > 
             <td class=" no-events" rowspan="1"></td>
 
         </tr>
-        <tr>
-            <td>09:30</td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-        </tr>
-        <tr>
-            <td>10:00</td>
-
-            <td class=" has-events" rowspan="2">
-
-                <div class="row-fluid lecture" style="width: 90%; height: 100%;">
-
-
-                    <span class="title">TASK1</span> <span class="lecturer"><a>Priority
-                            </a></span> <span class="location">23/111</span>
-                </div>
-            </td>
-  
-            <td class=" has-events" rowspan="2">
-
-                <div class="row-fluid lecture" style="width: 90%; height: 100%;"><b>
-
-
-                    <span class="title">TASK2</span> <span class="lecturer"><a>Priority<span class="location">44/654</span>
-
-                </div>
-            </td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" has-events" rowspan="4">
-
-                <div class="row-fluid lecture" style="width: 90%; height: 100%;">
-
-
-                    <span class="title">TASK3</span> <span class="lecturer"><a>Priority
-                            </a></span> <span class="location">54/222</span>
-                </div>
-            </td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-        </tr>
-        <tr>
-            <td>10:30</td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-        </tr>
-        <tr>
-            <td>11:00</td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-        </tr>
-        <tr>
-            <td>11:30</td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-        </tr>
-        <tr>
-            <td>12:00</td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td> 
-
-            <td class=" no-events" rowspan="1"></td>
-        </tr>
 
 <?php
 $host = "localhost";  
 $dbUsername = "root";
 $dbPassword = "";
-$dbname = "procrastination";   
+$dbname = "procrastination"; 
+$chosenList = ucwords($_POST['taskT']); 
+
+/*if (isset($_POST['pickL'])) {
+    $tryIt = $_POST['pickL'];
+}
+echo $tryIt;
+
+//echo mysql_real_escape_string($_POST['pickList']);
+//$x= $_POST["pickList"]; 
+//echo $x;
+$test = $_POST['pickL'];
+echo $test;
+$chosenList = 'Biology';  */
+
+//$chosenList = mysql_real_escape_string($_POST["pickList"]); 
+//echo $chosenList;
 
 //Create connection
 $conn = new mysqli($host, $dbUsername, $dbPassword, $dbname);
@@ -210,345 +137,379 @@ if($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error); 
 }
 
-$sql = "SELECT taskTitle, taskDescription, priorityLVL FROM listOfTasks LIMIT 0,5";
-$result = $conn->query($sql); 
- 
-$timestamp = strtotime('12:00');
-$time = date('H:i', $timestamp);   
-$tmp = 0;
+$sql= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList'
+ORDER BY createtask.listTitle
+LIMIT 0,3";  
 
-$timestamp = strtotime($time) + 60*60*.5;
+$result = $conn->query($sql);
+ 
+$timestamp = strtotime('9:00');
+$time = date('H:i', $timestamp);   
+
+$timestamp = strtotime($time) + 60*60; //increment by 1 hour
 $time = date('H:i', $timestamp); 
+
+echo "<tr>";
+echo "<td>". $time ."</td>"; 
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){ 
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
+        }
+    }else{ 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
+    }
+echo "</tr>";    
+
+$timestamp = strtotime($time) + 60*60;
+$time = date('H:i', $timestamp); 
+
+$sql2= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList' AND createtask.priorityLVL ='h'
+ORDER BY createtask.listTitle
+LIMIT 0,6";
+$tmp=0;
+
+$result = $conn->query($sql2);
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
 if($result->num_rows > 0){ //Output data in each row
     while($row = $result->fetch_assoc()){
         $tmp++;
-        //if($tmp<7){ 
-        //echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }
-        
-        //No event if even
+
+        //No event if odd idNum
         if($tmp%2==1){
-            echo "<td class=\" no-events\" rowspan=\"2\"></td>";
+            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
         } 
-        //Event if odd
-        if($tmp%2!=0){
-            echo "<td class=\" has-events\" rowspan=\"2\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
-        }    
-    
+        //Event if even idNum
+        if($tmp%2==0){
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+        }   
+
     }
-        //echo "<td class=\" no-events\" rowspan=\"1\"></td>";} }
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
+
     }else{ 
-        echo "null results";
-    }
-echo "</tr>";    
-
-$sql3 = "SELECT taskTitle, taskDescription, priorityLVL FROM listOfTasks";
-$result3 = $conn->query($sql);
-
-$timestamp = strtotime($time) + 60*60*.5;
-$time = date('H:i', $timestamp); 
-$tmp3=0;  
-
-echo "<tr>";
-echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($row = $result3->fetch_assoc()){
-        $tmp3++;
-        if($tmp3<5){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";} } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
-    }else{ 
-        echo "null results";
-    }
-echo "</tr>";  
-
-
-/*$sql2 = "SELECT taskTitle, taskDescription, priorityLVL FROM listOfTasks WHERE priorityLVL='hi'";
-$result2 = $conn->query($sql2);
-$tmp2=0;
-
-$timestamp = strtotime($time) + 60*60*.5;
-$time = date('H:i', $timestamp); 
-
-echo "<tr><td>". $time ."</td>"; 
-if($result2->num_rows > 0){ //Output data in each row
-    while($row = $result2->fetch_assoc()){
-        $tmp2++;
-        if($tmp2<5){ 
-        echo "<td class=\" has-events\" rowspan=\"2\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        //echo "<td class=\" no-events\" rowspan=\"1\"></td>";} }
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
-    }else{ 
-        echo "null results";
-    }
-echo "</tr>"; */
-
-$sqlT = "SELECT taskTitle, taskDescription, priorityLVL FROM listOfTasks LIMIT 4,3";
-$resultT = $conn->query($sqlT);
-$tmpT=0;
- 
-$timestamp = strtotime($time) + 60*60*.5;
-$time = date('H:i', $timestamp); 
-
-echo "<tr><td>". $time ."</td>"; 
-if($resultT->num_rows > 0){ //Output data in each row
-    while($row = $resultT->fetch_assoc()){
-        $tmpT++;
-        if($tmpT<5){ 
-        echo "<td class=\" has-events\" rowspan=\"2\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
-        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        //echo "<td class=\" no-events\" rowspan=\"1\"></td>";} }
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
-    }else{ 
-        echo "null results";
-    }
-echo "</tr>";
-
-$timestamp = strtotime($time) + 60*60*.5;
-$time = date('H:i', $timestamp); 
-$tmp4=0;  
-
-echo "<tr>";
-echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
-    }else{ 
-        echo "null results";
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
 echo "</tr>"; 
 
-$timestamp = strtotime($time) + 60*60*.5;
-$time = date('H:i', $timestamp); 
-$tmp5=0;  
+$timestamp = strtotime($time) + 60*60;
+$time = date('H:i', $timestamp);    
+
+$sql3= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList'
+ORDER BY createtask.listTitle
+LIMIT 3,3";
+
+$result = $conn->query($sql3);
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp5<8){
-        $tmp5++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){ 
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
+        }
     }else{ 
-        echo "null results";
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
     }
-echo "</tr>";
-$timestamp = strtotime($time) + 60*60*.5;
+echo "</tr>"; 
+
+$timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
-$tmp6=0;  
+
+$sql4= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList' AND createtask.priorityLVL ='h'
+ORDER BY createtask.listTitle
+LIMIT 0,7";
+$tmp=0;
+
+$result = $conn->query($sql4);
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp6<8){
-        $tmp6++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
-    }else{ 
-        echo "null results";
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){
+        $tmp++;
+        //No event if odd idNum
+        if($tmp%2==0){
+            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
+        } 
+        //Event if even idNum
+        if($tmp%2==1){
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+        }   
     }
-echo "</tr>";
 
-$timestamp = strtotime($time) + 60*60*.5;
+    }else{ 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
+    }
+echo "</tr>"; 
+
+$sql5= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList'
+ORDER BY createtask.listTitle
+LIMIT 6,3";  
+
+$result = $conn->query($sql5);
+
+$timestamp = strtotime($time) + 60*60; 
 $time = date('H:i', $timestamp); 
-$tmp4=0;  
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
-    }else{ 
-        echo "null results";
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){ 
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
+        }
+    }else{
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";  
     }
-echo "</tr>";
-$timestamp = strtotime($time) + 60*60*.5;
+echo "</tr>"; 
+
+//Free time at 15:00
+
+$timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
-$tmp4=0;  
+$tmp=0;
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
+if($tmp!=1){ //Output data in each row
+    while($tmp<7){
+        $tmp++;
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";} 
     }else{ 
-        echo "null results";
-    }
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";
+    } 
 echo "</tr>";
-$timestamp = strtotime($time) + 60*60*.5;
+
+$timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
-$tmp4=0;  
+
+$sql6= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList' AND createtask.priorityLVL ='m'
+ORDER BY createtask.listTitle
+LIMIT 0,6";
+$tmp=0;
+
+$result = $conn->query($sql6);
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
-    }else{ 
-        echo "null results";
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){
+        $tmp++;
+        //No event if even idNum
+        if($tmp%2==0){
+            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
+        } 
+        //Event if odd idNum
+        if($tmp%2==1){
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+        }   
     }
-echo "</tr>";
 
-$timestamp = strtotime($time) + 60*60*.5;
+    }else{ 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
+        //echo "null results"; 
+    }
+echo "</tr>"; 
+
+$sql7= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList'
+ORDER BY createtask.listTitle
+LIMIT 9,3";  
+
+$result = $conn->query($sql7); 
+
+$timestamp = strtotime($time) + 60*60; //increment by 1 hour
 $time = date('H:i', $timestamp); 
-$tmp4=0;  
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){ 
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
+        }
     }else{ 
-        echo "null results";
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
     }
-echo "</tr>";
+echo "</tr>";  
 
-$timestamp = strtotime($time) + 60*60*.5;
+$timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
-$tmp4=0;  
+$tmp=0;
+
+$sql6= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList' AND createtask.priorityLVL ='m'
+ORDER BY createtask.listTitle
+LIMIT 0,7";
+$tmp=0;
+
+$result = $conn->query($sql6);
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){
+        $tmp++;
+        //No event if odd idNum
+        if($tmp%2==1){
+            echo "<td class=\" no-events\" rowspan=\"1\"></td>";
+        } 
+        //Event if even idNum
+        if($tmp%2==0){
+            echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
+            echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+        }   
+    }
+
     }else{ 
-        echo "null results";
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
     }
 echo "</tr>";
-$timestamp = strtotime($time) + 60*60*.5;
+
+$timestamp = strtotime($time) + 60*60;
 $time = date('H:i', $timestamp); 
-$tmp4=0;  
+$tmp=0;
+
+$sql8= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList' AND createtask.priorityLVL ='m'
+ORDER BY createtask.listTitle
+LIMIT 7,7";
+$tmp=0;
+
+$result = $conn->query($sql8);
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){        
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 90%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";     
+        }   
     }else{ 
-        echo "null results";
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
     }
 echo "</tr>";
-$timestamp = strtotime($time) + 60*60*.5;
+
+$sql9= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList'
+ORDER BY createtask.listTitle
+LIMIT 12,3";  
+
+$result = $conn->query($sql9); 
+
+$timestamp = strtotime($time) + 60*60; //increment by 1 hour
 $time = date('H:i', $timestamp); 
-$tmp4=0;  
 
 echo "<tr>";
 echo "<td>". $time ."</td>"; 
-if($result3->num_rows > 0){ //Output data in each row
-    while($tmp4<8){
-        $tmp4++; 
-        //if($tmp4<8){ 
-        //echo "<td class=\" has-events\" rowspan=\"3\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
-        //echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>"; }}
-        echo "<td class=\" no-events\" rowspan=\"2\"></td>";}// } 
-        //echo "<br> taskTitle: ". $row["taskTitle"]. "  " . "Description: ". $row["taskDescription"]. "  " . "Priority: ". $row["priorityLVL"] . "<br>"; }
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){ 
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
+        }
     }else{ 
-        echo "null results";
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
+    }
+echo "</tr>";  
+
+// third appearance of task with priority level h
+$sql10= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList' AND createtask.priorityLVL ='h'
+ORDER BY createtask.listTitle
+LIMIT 0,7";
+
+$result = $conn->query($sql10);
+
+$timestamp = strtotime($time) + 60*60;
+$time = date('H:i', $timestamp); 
+
+echo "<tr>";
+echo "<td>". $time ."</td>"; 
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){ 
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
+        }
+    }else{ 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
     }
 echo "</tr>";
+
+$sql11= "SELECT createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+FROM createtask  
+INNER JOIN createlist    
+ON createtask.listTitle=createlist.listTitle AND createlist.listTitle='$chosenList' AND createtask.priorityLVL ='h'
+ORDER BY createtask.listTitle
+LIMIT 7,7";
+
+$result = $conn->query($sql11);
+
+$timestamp = strtotime($time) + 60*60;
+$time = date('H:i', $timestamp); 
+
+echo "<tr>";
+echo "<td>". $time ."</td>"; 
+if($result->num_rows > 0){ //Output data in each row
+    while($row = $result->fetch_assoc()){ 
+        echo "<td class=\" has-events\" rowspan=\"1\"><div class=\"row-fluid lecture\" style=\"width: 95%; height: 100%;\">";
+        echo "<span class=\"title\">" . $row["taskTitle"] . "</span> <span class=\"lecturer\"><a>" . $row["priorityLVL"] . "</a></span> <span class=\"location\">23/111</span></div></td>";
+        }
+    }else{ 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
+    }
+echo "</tr>";
+
+//Free time at 23:00
+$timestamp = strtotime($time) + 60*60;
+$time = date('H:i', $timestamp); 
+$tmp=0;
+
+echo "<tr>";
+echo "<td>". $time ."</td>"; 
+if($tmp!=1){ //Output data in each row
+    while($tmp<7){
+        $tmp++;
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>";} 
+    }else{ 
+        echo "<td class=\" no-events\" rowspan=\"1\"></td>"; 
+    } 
+echo "</tr>"; 
 
 $conn->close();
 ?>
-
-       <tr>
-            <td>19:00</td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-            <td class=" no-events" rowspan="1"></td>
-
-        </tr>
-
-        <tr>
-            <td>19:30</td>
-
-            <td class=" has-events" rowspan="2">
-
-                <div class="row-fluid lecture" style="width: 99%; height: 100%;">
-
-                    <span class="title">TASK A</span> <span class="lecturer"><a>PrLVL</a></span> <span class="location">111</span>
-                </div>
-            </td>
-
-            <td class=" has-events" rowspan="2">
-
-                <div class="row-fluid lecture" style="width: 90%; height: 100%;">
-
-                    <span class="title">TASK B</span> <span class="lecturer"><a>PrLVL</a></span> <span class="location">222</span>
-
-                </div>
-            </td>
-
-            <td class=" no-events" rowspan="2"></td>
-
-            <td class=" has-events" rowspan="2">
-
-                <div class="row-fluid lecture" style="width: 90%; height: 100%;">
-
-
-                    <span class="title">TASK C</span> <span class="lecturer"><a>PrLVL</a></span><span class="location">123</span>
-                </div>
-            </td>
-
-            <td class=" no-events" rowspan="2"></td>
-
-        </tr>
 
     </tbody>
 
