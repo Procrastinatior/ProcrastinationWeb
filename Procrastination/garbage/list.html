@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>List</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<link rel="stylesheet" type="text/css" href="Styles/todos.css">
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,700,500' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.css">
+	<script type="text/javascript" src="Scripts/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+
+<div class="grid-container">
+<div id="grid-item" class="col-sm-3 col-md-6 col-lg-4 ">
+	<h1>List <i class="fa fa-plus"></i></h1>
+
+	<!--<i class="fa fa-plus"></i> (creates + icon)-->
+
+	<ul>
+		<li><span><i class="fa fa-trash"></i></span> Biology Quiz</li>
+		<li><span><i class="fa fa-trash"></i></span> Algebra Final</li>
+		<li><span><i class="fa fa-trash"></i></span> Comp Assignment 1</li>
+	</ul>
+</div>
+
+<?php
+<div id="grid-item" class="col-sm-3 col-md-6 col-lg-4 ">
+		$sql= "SELECT  createlist.listTitle, createtask.taskTitle, createtask.priorityLVL 
+		From createtask 
+		INNER JOIN createlist 
+		ON createtask.listTitle=createlist.listTitle
+		ORDER BY createtask.listTitle";
+
+		$result = $conn->query($sql);
+
+		echo"<table>
+
+		<tr>
+
+		<th>EmpId</th>
+
+		<th>Firstname</th>
+
+		<th>DeptName</th>
+
+		</tr>";
+
+		while($row = $result->fetch_assoc())
+
+		{
+
+		echo "<tr>";
+
+		echo "<td>" . $row['listTitle'] . "</td>";
+
+		echo "<td>" . $row['taskTitle'] . "</td>";
+
+		echo "<td>" . $row['priorityLVL'] . "</td>";
+
+		echo "</tr>";
+
+		
+
+		}
+
+		echo "</table>";
+	
+	<h1>List </h1>
+
+	<!--<i class="fa fa-plus"></i> (creates + icon)-->
+
+	<ul>
+		<li><span><i class="fa fa-trash"></i></span> Comp Assignment 2</li>
+		<li><span><i class="fa fa-trash"></i></span> Grocery Shopping</li>
+		<li><span><i class="fa fa-trash"></i></span> Review Session</li>
+	</ul>
+
+</div>
+?>
+
+<!--
+<div id="grid-item" class="col-sm-3 col-md-6 col-lg-4 ">
+	<h1>List </h1>
+
+	
+
+	<ul>
+		<li><span><i class="fa fa-trash"></i></span> Comp Assignment 2</li>
+		<li><span><i class="fa fa-trash"></i></span> Grocery Shopping</li>
+		<li><span><i class="fa fa-trash"></i></span> Review Session</li>
+	</ul>
+</div>
+
+-->
+
+	
+</div>
+
+<script type="text/javascript" src="Scripts/todos.js"></script>
+</body>
+</html>

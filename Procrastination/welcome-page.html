@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+
+.homeTitle{
+        text-align: left; 
+        font-size: 20px;  
+        background: #7c96cd;
+        height: 30px;
+        width: 20%; 
+        position: relative; 
+        padding: 4px; 
+        margin: auto; 
+        animation-delay: 2s; 
+        animation-duration: 4s;
+}
+
+/* Center image and add max width if necessary */
+.container { 
+    position: relative; 
+    margin: 0 auto; 
+    max-height: 570px;
+}
+
+.container img {vertical-align: middle;}
+
+.container .content {
+    position: absolute; /* Position the background text */
+    bottom: 0; /* At the bottom. Use top:0 to append it to the top */
+    background: rgb(0, 0, 0); /* Fallback color */
+    background: rgba(0, 0, 0, 0.5); /* Black background with 0.5 opacity */
+    color: #7c96cd; /* Grey text */
+    width: 100%; /* Full width */
+    padding: 20px; /* Some padding */
+} 
+
+.container .content a {
+    text-decoration: none;
+    font-size: 30px;
+    color: #818181;
+    display: block;
+}
+
+.container .content a:hover{
+    color: #f1f1f1;
+}
+
+bodyFormat{
+    font-family: Arial;
+    font-size: 17px;
+}
+</style>
+
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script> 
+    $(function(){
+            $("titleA").animate({
+                opacity: '0.8',
+                height: '+=100px',
+                width: '98%',
+                fontSize: '70px',
+                padding: '12px'
+            });     
+    });
+</script>    
+</head> 
+
+<body>
+
+<titleA class ="homeTitle">
+    <p>
+        Website title here
+    </p>
+</titleA>  
+
+<div class="container">
+    <img src="toDoList.jpg" alt="toDoList" style="width:100%;">
+        <div class="content">
+            <bodyFormat>
+                <h1><a href="Scripts/login.php">Login</a></h1>
+                <h2><a href="Scripts/register.php">Sign Up</a></h2>
+                     <p><b><i><h3>You may delay, but time will not.</i></b></h3> Benjamin Franklin</p>
+            </bodyFormat>
+        </div>
+</div>
+<div>
+    <h1><a href="Scripts/login.php">Login</a></h1>
+    <h1><a href="Scripts/register.php">Sign Up</a></h1>
+</div>
+
+</body>
+
+</html>
