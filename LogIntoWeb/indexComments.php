@@ -25,3 +25,25 @@ getComments($db);
 ?>
 </body>
 </html>
+
+<?php
+          
+         echo "<form role='form' class='col-xs-6' action='".setComments($db)."'>
+            
+               <div class='form-group'>
+                 <input type='hidden' class='form-control' id='firstname'  name='firstname' required>
+                </div>
+                <div class='form-group'>
+                  <input type='hidden' class='form-control' id='".date('Y-m-d H:i:S')."' name='date' required>
+                </div>
+                <div class='form-group form-group-lg'>
+                    <input type='text' class='form-control' id='comment' placeholder='Post Comment' name='comment'>
+                </div>
+                <div class='form-group'>
+                   
+                   <button name='postSubmit' type='submit'>Post</button>
+                </div>
+             
+		 </form>";
+		 getComments($db);
+         ?>
